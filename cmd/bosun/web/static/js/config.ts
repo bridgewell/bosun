@@ -393,5 +393,10 @@ bosunControllers.controller('ConfigCtrl', ['$scope', '$http', '$location', '$rou
 		$scope.error = data.Errors;
 		$scope.warning = data.Warnings;
 	}
+
+	$scope.saveConfig = () => {
+		var blob = new Blob([$scope.config_text], {type: "text/plain;charset=utf-8"});
+		alert("Saved: " + blob);
+	}
 	return $scope;
 }]);

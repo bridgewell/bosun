@@ -20,6 +20,6 @@ docker cp ${ID}:/hbase $TMP
 docker cp ${ID}:/tsdb $TMP
 docker rm ${ID}
 rm -rf $TMP/hbase/hbase/docs $TMP/tsdb/build/gwt-unitCache
-docker build -t stackexchange/bosun run
+docker build -t bridgewell/bosun run
 rm -rf build/bosun $TMP
 echo bosun docker image built
