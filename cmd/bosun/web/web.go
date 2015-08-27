@@ -87,6 +87,7 @@ func Listen(listenAddr string, devMode bool, tsdbHost string) error {
 	router.Handle("/api/backup", JSON(Backup))
 	router.Handle("/api/config", miniprofiler.NewHandler(Config))
 	router.Handle("/api/config_test", miniprofiler.NewHandler(ConfigTest))
+	router.Handle("/api/config_save", miniprofiler.NewHandler(ConfigSave))
 	router.Handle("/api/egraph/{bs}.svg", JSON(ExprGraph))
 	router.Handle("/api/expr", JSON(Expr))
 	router.Handle("/api/graph", JSON(Graph))
@@ -546,6 +547,33 @@ func ConfigTest(t miniprofiler.Timer, w http.ResponseWriter, r *http.Request) {
 	_, err = conf.New("test", string(b))
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
+	}
+}
+
+func ConfigSave(t miniprofiler.Timer, w http.ResponseWriter, r *http.Request) {
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		serveError(w, err)
+		return
+	}
+	if len(b) == 0 {
+		serveError(w, fmt.Errorf("empty config"))
+		return
+	}
+	_, err = conf.New("test", string(b))
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+	err = conf.SaveFile("/data/bosun.conf", string(b))
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+	schedule.Conf, err = conf.New("apply", string(b))
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+		return
 	}
 }
 

@@ -44,6 +44,7 @@ interface IConfigScope extends IBosunScope {
 	scrollToInterval: (v: string) => void;
 	show: (v: any) => void;
 	loadTimelinePanel: (entry:any, v: any) => void;
+	saveConfig: () => void;
 }
 
 bosunControllers.controller('ConfigCtrl', ['$scope', '$http', '$location', '$route', '$timeout','$sce', function($scope: IConfigScope, $http: ng.IHttpService, $location: ng.ILocationService, $route: ng.route.IRouteService, $timeout: ng.ITimeoutService, $sce: ng.ISCEService) {
@@ -386,6 +387,23 @@ bosunControllers.controller('ConfigCtrl', ['$scope', '$http', '$location', '$rou
 			});
 	};
 	
+	$scope.saveConfig = () => {
+		$http.post('/api/config_save', $scope.config_text)
+			.success((data) => {
+				if (data == "") {
+					$scope.validationResult = "Saved";
+					$timeout(()=>{
+						$scope.validationResult = "";
+					},2000)
+				} else {
+					$scope.validationResult = data;
+				}
+			})
+			.error((error) => {
+				$scope.validationResult = 'Error saving: ' + error;
+			});
+	}
+
 	function procResults(data: any) {
 		$scope.subject = data.Subject;
 		$scope.body = $sce.trustAsHtml(data.Body);
@@ -394,9 +412,5 @@ bosunControllers.controller('ConfigCtrl', ['$scope', '$http', '$location', '$rou
 		$scope.warning = data.Warnings;
 	}
 
-	$scope.saveConfig = () => {
-		var blob = new Blob([$scope.config_text], {type: "text/plain;charset=utf-8"});
-		alert("Saved: " + blob);
-	}
 	return $scope;
 }]);

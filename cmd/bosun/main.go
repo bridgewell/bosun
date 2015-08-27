@@ -166,6 +166,7 @@ func main() {
 	if *flagWatch {
 		watch(".", "*.go", quit)
 		watch(filepath.Join("web", "static", "templates"), "*.html", web.RunEsc)
+		watch(filepath.Join("web", "static", "partials"), "*.html", web.RunEsc)
 		base := filepath.Join("web", "static", "js")
 		watch(base, "*.ts", web.RunTsc)
 	}

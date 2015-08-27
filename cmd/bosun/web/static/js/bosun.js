@@ -706,6 +706,23 @@ bosunControllers.controller('ConfigCtrl', ['$scope', '$http', '$location', '$rou
                 v.doneLoading = true;
             });
         };
+        $scope.saveConfig = function () {
+            $http.post('/api/config_save', $scope.config_text)
+                .success(function (data) {
+                if (data == "") {
+                    $scope.validationResult = "Saved";
+                    $timeout(function () {
+                        $scope.validationResult = "";
+                    }, 2000);
+                }
+                else {
+                    $scope.validationResult = data;
+                }
+            })
+                .error(function (error) {
+                $scope.validationResult = 'Error saving: ' + error;
+            });
+        };
         function procResults(data) {
             $scope.subject = data.Subject;
             $scope.body = $sce.trustAsHtml(data.Body);

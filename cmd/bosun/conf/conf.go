@@ -330,6 +330,15 @@ func ParseFile(fname string) (*Conf, error) {
 	return New(fname, string(f))
 }
 
+func SaveFile(fname string, text string) error {
+	t := time.Now()
+	err := os.Rename(fname, fmt.Sprint(fname, ".", t.Format(time.RFC3339), ".backup"))
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(fname, []byte(text), 0644)
+}
+
 func New(name, text string) (c *Conf, err error) {
 	defer errRecover(&err)
 	c = &Conf{
